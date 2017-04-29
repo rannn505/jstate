@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> JState DevTools </title>
+  <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+  <link href="https://cdn.rawgit.com/todylu/monaco.ttf/master/monaco.ttf" rel="stylesheet">
+  <link href="https://cdn.rawgit.com/rannn505/jstate/master/src/jsonviewer/jsonviewer.min.css" rel="stylesheet">
+  <style>
+    body {
+      position: fixed; top: 0; bottom: 0; left: 0; right: 0;
+      padding: 0;
+      margin: 0;
+      color: #6e6e6e;
+      list-style: none;
+      background-color: #fff;
+      font-family: 'monaco', 'Inconsolata', monospace;
+      min-height: 325px;
+      min-width: 325px;
+    }
+    .container {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-flow: column;
+      flex-flow: column;
+    }
+    .title {
+      font-size: 14px;
+      text-align: center;
+    }
+    .btns {
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-flow: row wrap;
+      flex-flow: row wrap;
+    }
+    .actions {
+      flex: 10 2;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .btn {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      color: #555;
+      font-family: monospace;
+      border-radius: 1px;
+      padding: 5px 10px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+    }
+    .btn:hover {
+      background-color: #ccc;
+    }
+    .btn:active {
+      background-color: #c1c1c1;
+    }
+    .input {
+      padding: 6px 12px;
+      font-size: 14px;
+      font-family: 'Inconsolata', monospace;
+      line-height: 1.42857143;
+      color: #555;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+      box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    }
+    .hr {
+      width: 100%;
+    }
+    ::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(60, 63, 65, 0.8);
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="actions" id="actions">
+    </div>
+    <div class="btns">
+      <input class="input" placeholder="setState()" style="flex: 10 2" type="text" id="setState">
+      <button class="btn" id="reset">Reset</button>
+      <button class="btn" id="rollback">Rollback</button>
+    </div>
+    <div class="title">
+      JState DevTools
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/rannn505/jstate/master/src/jsonviewer/jsonviewer.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsondiffpatch/0.2.4/jsondiffpatch.min.js"></script>
+  <script>
+    (function () {
+      if (!window.jQuery) {
+        throw new Error('jQuery is not loaded. please check your network connectivity');
+      }
+      var nodes = [];
+      function renderNodes() {
+        $('#actions').empty();
+        $.each(nodes, function(index, node) {
+          $('#actions').prepend('<div id="'+node.id+'"></div>');
+          var newNode = $('#'+node.id);
+          newNode.jsonviewer(node, index === nodes.length - 1);
+          newNode.append('<hr class="hr"/>');
+        });
+      }
+      function addNode(node) {
+        node.diff = jsondiffpatch.diff(node.oldState, node.state);
+        delete node.oldState;
+        nodes.push(node);
+        renderNodes();
+      }
+      function flush(queue) {
+        if(queue.length === 0) return;
+        addNode(queue.shift());
+        return flush(queue);
+      }
+
+      $(window).on("message", function() {
+        flush(opener.queue);
+      });
+      $("#setState").on("keypress", function(e) {
+        var code = (e.keyCode ? e.keyCode : e.which);
+        if (code === 13) {
+          e.preventDefault();
+          var input = $("#setState");
+          try {
+            opener.setState(eval('(' + input.val() + ')'));
+            input.val('');
+          } catch (e) {
+            throw new Error('Invalid JSON');
+          }
+        }
+      });
+      $("#reset").on("click", function() {
+        nodes = [];
+        opener.overwriteState({});
+        renderNodes()
+      });
+      $("#rollback").on("click", function() {
+        nodes.pop() && nodes.length > 0 ?
+          opener.overwriteState(nodes[nodes.length - 1].state) :
+          opener.overwriteState({});
+        renderNodes();
+      });
+
+      flush(opener.queue);
+    })();
+  </script>
+</body>
+</html>
