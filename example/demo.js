@@ -1,9 +1,8 @@
 jstate.showDevTools();
 
-const logger = next => args => {
-  let result = next(args);
-  console.log(jstate.getState());
-  return result;
+const logger = next => action => {
+  let result = next(action);
+  console.log(jstate.state);
 }
 jstate.register(logger);
 jstate.setState({a:1});

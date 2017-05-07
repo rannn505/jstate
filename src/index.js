@@ -1,2 +1,2 @@
-export { getState, setState, register } from './store'
+export { state, setState, register } from './store'
 export { showDevTools } from './devTools'

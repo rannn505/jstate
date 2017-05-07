@@ -15,10 +15,17 @@ export class Store {
 }
 
 const context = new Store();
-export let getState = (...args) => Store.prototype.getState.apply(context, args);
-export let setState = (...args) => Store.prototype.setState.apply(context, args);
+export let setState = (partialState) => Store.prototype.setState.call(context, partialState);
 export let overwriteState = (newState) => context.state = Object.assign({}, newState);
 export let register = (...middlewares) => {
   context.middlewares = context.middlewares.concat(middlewares);
-  setState = context.middlewares.reduce((f, g) => (...args) => f(g(...args)))((...args) => Store.prototype.setState.apply(context, args));
+  setState = context.middlewares.reduceRight((f, g) => (next) => f(g(next)))(
+    (partialState) => Store.prototype.setState.call(context, partialState)
+  );
 };
+
+export let state = context.getState();
+register(next => action => {
+  let result = next(action);
+  state = context.getState();
+});

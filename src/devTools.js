@@ -1,27 +1,23 @@
-import { getState, setState, overwriteState, register } from './store'
+import { state, setState, overwriteState, register } from './store'
 import html from './devToolsTemplate.html';
 
-let popup, queue = [];
-
-const devTools = next => args => {
-  var oldState = getState();
-  let result = next(args);
-  queue.push({
-    id: (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase(),
-    action: args,
-    state: getState(),
-    oldState
-  });
-  popup.postMessage('FLUSH', '*');
-  return result;
-};
 export function showDevTools() {
-  popup = window.open(null, 'jstate-dev-tools', 'width=400,height=600,menubar=no,location=no,resizable=yes,scrollbars=no,status=no');
+  let popup = window.open(null, 'jstate-dev-tools', 'width=400,height=600,menubar=no,location=no,resizable=yes,scrollbars=no,status=no');
   popup.location.reload();
-  register(devTools);
+  let queue = [];
+  register(next => action => {
+    let oldState = state;
+    let result = next(action);
+    queue.push({
+      id: (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase(),
+      action,
+      state,
+      oldState
+    });
+    popup.postMessage('FLUSH', '*');
+  });
   setTimeout(() => {
     popup.opener = {
-      getState,
       setState,
       overwriteState,
       register,
