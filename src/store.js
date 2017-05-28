@@ -6,26 +6,28 @@ export class Store {
   getState() {
     return Object.assign({}, this.state);
   }
-  setState(partialState) {
-    if(typeof partialState !== 'object') {
+  setState(data, overwrite = false) {
+    if(typeof data !== 'object') {
       throw new TypeError('setState() takes an object of state variables to update');
     }
-    this.state = Object.assign({}, this.state, partialState);
+    this.state = !overwrite ? Object.assign({}, this.state, data) : Object.assign({}, data);
   }
 }
 
 const context = new Store();
+export let state = context.getState();
 export let setState = (partialState) => Store.prototype.setState.call(context, partialState);
-export let overwriteState = (newState) => context.state = Object.assign({}, newState);
+export let overwriteState = (newState) => {
+  Store.prototype.setState.call(context, newState, true);
+  state = context.getState();
+};
 export let register = (...middlewares) => {
   context.middlewares = context.middlewares.concat(middlewares);
   setState = context.middlewares.reduceRight((f, g) => (next) => f(g(next)))(
     (partialState) => Store.prototype.setState.call(context, partialState)
   );
 };
-
-export let state = context.getState();
 register(next => action => {
-  let result = next(action);
+  next(action);
   state = context.getState();
 });

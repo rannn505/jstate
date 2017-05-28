@@ -4,7 +4,7 @@
  * @link https://github.com/rannn505/jstate#readme
  * @copyright Copyright (c) 2017 Ran Cohen <rannn505@outlook.com>
  * @license MIT (http://www.opensource.org/licenses/mit-license.php)
- * @Compiled At: 2017-05-07
+ * @Compiled At: 2017-05-29
   *********************************************************/
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jstate = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
@@ -120,11 +120,13 @@ var Store = exports.Store = function () {
     }
   }, {
     key: 'setState',
-    value: function setState(partialState) {
-      if ((typeof partialState === 'undefined' ? 'undefined' : _typeof(partialState)) !== 'object') {
+    value: function setState(data) {
+      var overwrite = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
         throw new TypeError('setState() takes an object of state variables to update');
       }
-      this.state = _extends({}, this.state, partialState);
+      this.state = !overwrite ? _extends({}, this.state, data) : _extends({}, data);
     }
   }]);
 
@@ -132,11 +134,13 @@ var Store = exports.Store = function () {
 }();
 
 var context = new Store();
+var state = exports.state = context.getState();
 var setState = exports.setState = function setState(partialState) {
   return Store.prototype.setState.call(context, partialState);
 };
 var overwriteState = exports.overwriteState = function overwriteState(newState) {
-  return context.state = _extends({}, newState);
+  Store.prototype.setState.call(context, newState, true);
+  exports.state = state = context.getState();
 };
 var register = exports.register = function register() {
   for (var _len = arguments.length, middlewares = Array(_len), _key = 0; _key < _len; _key++) {
@@ -152,11 +156,9 @@ var register = exports.register = function register() {
     return Store.prototype.setState.call(context, partialState);
   });
 };
-
-var state = exports.state = context.getState();
 register(function (next) {
   return function (action) {
-    var result = next(action);
+    next(action);
     exports.state = state = context.getState();
   };
 });
