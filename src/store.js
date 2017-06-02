@@ -1,33 +1,25 @@
-export class Store {
-  constructor() {
-    this.state = {};
-    this.middlewares = [];
-  }
-  getState() {
-    return Object.assign({}, this.state);
-  }
-  setState(data, overwrite = false) {
-    if(typeof data !== 'object') {
-      throw new TypeError('setState() takes an object of state variables to update');
-    }
-    this.state = !overwrite ? Object.assign({}, this.state, data) : Object.assign({}, data);
-  }
-}
+let _state = {};
+let _middlewares = [];
 
-const context = new Store();
-export let state = context.getState();
-export let setState = (partialState) => Store.prototype.setState.call(context, partialState);
+export let getState = () => {
+  return Object.assign({}, _state);
+}
+export let setState = (partialState) => {
+  if(typeof partialState !== 'object') {
+    throw new TypeError('setState() takes an object of state variables to update');
+  }
+  _state = Object.assign({}, _state, partialState);
+};
 export let overwriteState = (newState) => {
-  Store.prototype.setState.call(context, newState, true);
-  state = context.getState();
+  _state = Object.assign({}, newState);
+  state = getState();
 };
 export let register = (...middlewares) => {
-  context.middlewares = context.middlewares.concat(middlewares);
-  setState = context.middlewares.reduceRight((f, g) => (next) => f(g(next)))(
-    (partialState) => Store.prototype.setState.call(context, partialState)
-  );
+  _middlewares = _middlewares.concat(middlewares);
+  setState = _middlewares.reduceRight((f, g) => (next) => f(g(next)))((partialState) => _state = Object.assign({}, _state, partialState));
 };
+export let state = getState();
 register(next => action => {
   next(action);
-  state = context.getState();
+  state = getState();
 });
