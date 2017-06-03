@@ -16,8 +16,16 @@ export default {
   },
   register: (...middlewares) => {
     _middlewares = _middlewares.concat(middlewares);
-    let chain = _middlewares.reduceRight((f, g) => (next) => f(g(next)))((partialState) => _state = Object.assign({}, _state, partialState));
+    let chain = _middlewares.reduceRight((f, g) => next => f(g(next)))(partialState => _state = Object.assign({}, _state, partialState));
     module.exports.setState = chain;
     global['$'].setState = chain;
+    module.exports.overwriteState = _middlewares.reduceRight((f, g) => {
+      if(g.name !== '__DEVTOOLS__') {
+        return next => f(g(next));
+      }
+      else {
+        return f;
+      }
+    })(newState => _state = Object.assign({}, newState));
   },
 };
