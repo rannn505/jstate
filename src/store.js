@@ -16,7 +16,6 @@ export default {
   },
   register: (...middlewares) => {
     _middlewares = _middlewares.concat(middlewares);
-    console.log(_middlewares);
     let chain = _middlewares.reduceRight((f, g) => next => f(g(next)))(partialState => _state = Object.assign({}, _state, partialState));
     module.exports.setState = chain;
     global['$'].setState = chain;

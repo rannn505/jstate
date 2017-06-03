@@ -139,7 +139,6 @@ exports.default = {
     }
 
     _middlewares = _middlewares.concat(middlewares);
-    console.log(_middlewares);
     var chain = _middlewares.reduceRight(function (f, g) {
       return function (next) {
         return f(g(next));
