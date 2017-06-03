@@ -4,7 +4,7 @@
  * @link https://github.com/rannn505/jstate#readme
  * @copyright Copyright (c) 2017 Ran Cohen <rannn505@outlook.com>
  * @license MIT (http://www.opensource.org/licenses/mit-license.php)
- * @Compiled At: 2017-06-03
+ * @Compiled At: 2017-06-04
   *********************************************************/
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jstate = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
@@ -27,7 +27,7 @@ function showDevTools() {
   popup.location.reload();
   var queue = [],
       id = 0;
-  (0, _store.register)(function (next) {
+  var __DEVTOOLS__ = function __DEVTOOLS__(next) {
     return function (action) {
       var oldState = _store.state;
       var result = next(action);
@@ -39,7 +39,8 @@ function showDevTools() {
       });
       popup.postMessage('FLUSH', '*');
     };
-  });
+  };
+  (0, _store.register)(__DEVTOOLS__);
   setTimeout(function () {
     popup.opener = {
       setState: _store.setState,
@@ -138,6 +139,7 @@ exports.default = {
     }
 
     _middlewares = _middlewares.concat(middlewares);
+    console.log(_middlewares);
     var chain = _middlewares.reduceRight(function (f, g) {
       return function (next) {
         return f(g(next));
@@ -147,6 +149,16 @@ exports.default = {
     });
     module.exports.setState = chain;
     global['$'].setState = chain;
+    module.exports.overwriteState = _middlewares.reduceRight(function (f, g) {
+      if (g.name === '__DEVTOOLS__') {
+        return f;
+      }
+      return function (next) {
+        return f(g(next));
+      };
+    })(function (newState) {
+      return _state = _extends({}, newState);
+    });
   }
 };
 module.exports = exports['default'];

@@ -16,16 +16,15 @@ export default {
   },
   register: (...middlewares) => {
     _middlewares = _middlewares.concat(middlewares);
+    console.log(_middlewares);
     let chain = _middlewares.reduceRight((f, g) => next => f(g(next)))(partialState => _state = Object.assign({}, _state, partialState));
     module.exports.setState = chain;
     global['$'].setState = chain;
     module.exports.overwriteState = _middlewares.reduceRight((f, g) => {
-      if(g.name !== '__DEVTOOLS__') {
-        return next => f(g(next));
-      }
-      else {
+      if(g.name === '__DEVTOOLS__') {
         return f;
       }
+      return next => f(g(next));
     })(newState => _state = Object.assign({}, newState));
   },
 };

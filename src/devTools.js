@@ -5,7 +5,7 @@ export function showDevTools() {
   let popup = window.open(null, 'jstate-dev-tools', 'width=400,height=600,menubar=no,location=no,resizable=yes,scrollbars=no,status=no');
   popup.location.reload();
   let queue = [], id = 0;
-  register(next => action => {
+  const __DEVTOOLS__ = next => action => {
     let oldState = state;
     let result = next(action);
     queue.push({
@@ -15,7 +15,8 @@ export function showDevTools() {
       oldState
     });
     popup.postMessage('FLUSH', '*');
-  });
+  };
+  register(__DEVTOOLS__);
   setTimeout(() => {
     popup.opener = {
       setState,
