@@ -1,16 +1,10 @@
 export { state, setState, register } from './store'
 export { showDevTools } from './devTools'
 
-setTimeout(()=>{
-  let self;
-  if(new Function("try {return this===window;}catch(e){ return false;}")) {
-    self = window;
-  } else if(new Function("try {return this===global;}catch(e){return false;}")) {
-    self = global;
-  }
-
-  if (!self.jQuery) {
-    self['$'] = {};
-  }
-  Object.keys(self.jstate).forEach(key => Object.defineProperty(self['$'], key, Object.getOwnPropertyDescriptor(self.jstate, key)));
-}, 10);
+if (!global.jQuery) {
+  global['$'] = {};
+}
+let STORE = require('./store');
+let DEV = require('./devTools');
+Object.keys(STORE).forEach(key => (key !== 'overwriteState') && Object.defineProperty(global.$, key, Object.getOwnPropertyDescriptor(STORE, key)));
+Object.keys(DEV).forEach(key => Object.defineProperty(global.$, key, Object.getOwnPropertyDescriptor(DEV, key)));

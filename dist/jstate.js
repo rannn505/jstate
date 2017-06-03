@@ -4,7 +4,7 @@
  * @link https://github.com/rannn505/jstate#readme
  * @copyright Copyright (c) 2017 Ran Cohen <rannn505@outlook.com>
  * @license MIT (http://www.opensource.org/licenses/mit-license.php)
- * @Compiled At: 2017-06-02
+ * @Compiled At: 2017-06-03
   *********************************************************/
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jstate = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
@@ -32,7 +32,6 @@ function showDevTools() {
       var oldState = _store.state;
       var result = next(action);
       queue.push({
-        // id: (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase(),
         id: ++id,
         action: action,
         state: _store.state,
@@ -94,24 +93,21 @@ Object.defineProperty(exports, 'showDevTools', {
 });
 
 
-setTimeout(function () {
-  var self = void 0;
-  if (new Function("try {return this===window;}catch(e){ return false;}")) {
-    self = window;
-  } else if (new Function("try {return this===global;}catch(e){return false;}")) {
-    self = global;
-  }
-
-  if (!self.jQuery) {
-    self['$'] = {};
-  }
-  Object.keys(self.jstate).forEach(function (key) {
-    return Object.defineProperty(self['$'], key, Object.getOwnPropertyDescriptor(self.jstate, key));
-  });
-}, 10);
+if (!global.jQuery) {
+  global['$'] = {};
+}
+var STORE = require('./store');
+var DEV = require('./devTools');
+Object.keys(STORE).forEach(function (key) {
+  return key !== 'overwriteState' && Object.defineProperty(global.$, key, Object.getOwnPropertyDescriptor(STORE, key));
+});
+Object.keys(DEV).forEach(function (key) {
+  return Object.defineProperty(global.$, key, Object.getOwnPropertyDescriptor(DEV, key));
+});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./devTools":1,"./store":4}],4:[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -125,40 +121,38 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 var _state = {};
 var _middlewares = [];
 
-var getState = exports.getState = function getState() {
-  return _extends({}, _state);
-};
-var setState = exports.setState = function setState(partialState) {
-  if ((typeof partialState === 'undefined' ? 'undefined' : _typeof(partialState)) !== 'object') {
-    throw new TypeError('setState() takes an object of state variables to update');
-  }
-  _state = _extends({}, _state, partialState);
-};
-var overwriteState = exports.overwriteState = function overwriteState(newState) {
-  _state = _extends({}, newState);
-  exports.state = state = getState();
-};
-var register = exports.register = function register() {
-  for (var _len = arguments.length, middlewares = Array(_len), _key = 0; _key < _len; _key++) {
-    middlewares[_key] = arguments[_key];
-  }
+exports.default = {
+  get state() {
+    return _extends({}, _state);
+  },
+  setState: function setState(partialState) {
+    if ((typeof partialState === 'undefined' ? 'undefined' : _typeof(partialState)) !== 'object') {
+      throw new TypeError('setState() takes an object of state variables to update');
+    }
+    _state = _extends({}, _state, partialState);
+  },
+  overwriteState: function overwriteState(newState) {
+    _state = _extends({}, newState);
+  },
+  register: function register() {
+    for (var _len = arguments.length, middlewares = Array(_len), _key = 0; _key < _len; _key++) {
+      middlewares[_key] = arguments[_key];
+    }
 
-  _middlewares = _middlewares.concat(middlewares);
-  exports.setState = setState = _middlewares.reduceRight(function (f, g) {
-    return function (next) {
-      return f(g(next));
-    };
-  })(function (partialState) {
-    return _state = _extends({}, _state, partialState);
-  });
+    _middlewares = _middlewares.concat(middlewares);
+    var chain = _middlewares.reduceRight(function (f, g) {
+      return function (next) {
+        return f(g(next));
+      };
+    })(function (partialState) {
+      return _state = _extends({}, _state, partialState);
+    });
+    module.exports.setState = chain;
+    global['$'].setState = chain;
+  }
 };
-var state = exports.state = getState();
-register(function (next) {
-  return function (action) {
-    next(action);
-    exports.state = state = getState();
-  };
-});
+module.exports = exports['default'];
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}]},{},[3])(3)
 });
