@@ -1,10 +1,9 @@
 jstate.showDevTools();
-
 const logger = next => action => {
   let result = next(action);
-  console.log(jstate.state);
+  console.log($._);
 }
 jstate.register(logger);
 jstate.setState({a:1});
-jstate.setState({a:2, b:3});
-jstate.setState({c: {b: [1]}});
+$.setState({a:2, b:3});
+$.setState({c: {b: [1]}});

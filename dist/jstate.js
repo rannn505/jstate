@@ -97,13 +97,11 @@ if (!global.jQuery) {
   global['$'] = {};
 }
 var STORE = require('./store');
-var DEV = require('./devTools');
 Object.keys(STORE).forEach(function (key) {
   return key !== 'overwriteState' && Object.defineProperty(global.$, key, Object.getOwnPropertyDescriptor(STORE, key));
 });
-Object.keys(DEV).forEach(function (key) {
-  return Object.defineProperty(global.$, key, Object.getOwnPropertyDescriptor(DEV, key));
-});
+Object.defineProperty(global.$, 'showDevTools', Object.getOwnPropertyDescriptor(require('./devTools'), 'showDevTools'));
+Object.defineProperty(global.$, '_', Object.getOwnPropertyDescriptor(STORE, 'state'));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./devTools":1,"./store":4}],4:[function(require,module,exports){
