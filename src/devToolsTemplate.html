@@ -130,10 +130,12 @@
       if (!window.jQuery) {
         throw new Error('jQuery is not loaded. please check your network connectivity');
       }
-      var nodes = [];
+      var nodes = [], id = 0;
       function renderNodes() {
         $('#actions').empty();
         $.each(nodes, function(index, node) {
+          node.diff = jsondiffpatch.diff(node.oldState, node.state);
+          delete node.oldState;
           $('#actions').prepend('<div id="'+node.id+'"></div>');
           var newNode = $('#'+node.id);
           newNode.jsonviewer(node, index === nodes.length - 1);
@@ -143,20 +145,14 @@
           newNode.append('<hr class="hr"/>');
         });
       }
-      function addNode(node) {
-        node.diff = jsondiffpatch.diff(node.oldState, node.state);
-        delete node.oldState;
-        nodes.push(node);
+      $(window).on("message", function(e) {
+        nodes.push({
+          id: ++id,
+          action: e.originalEvent.data.action,
+          state: e.originalEvent.data.state,
+          oldState: e.originalEvent.data.oldState,
+        });
         renderNodes();
-      }
-      function flush(queue) {
-        if(queue.length === 0) return;
-        addNode(queue.shift());
-        return flush(queue);
-      }
-
-      $(window).on("message", function() {
-        flush(opener.queue);
       });
       $("#setState").on("keypress", function(e) {
         var code = (e.keyCode ? e.keyCode : e.which);
@@ -172,9 +168,9 @@
         }
       });
       $("#reset").on("click", function() {
-        nodes = [];
+        nodes = []; id = 0;
         opener.overwriteState({});
-        renderNodes()
+        renderNodes();
       });
       $("#rollback").on("click", function() {
         nodes.pop() && nodes.length > 0 ?
@@ -183,7 +179,7 @@
         renderNodes();
       });
 
-      flush(opener.queue);
+      opener.notifyReady();
     })();
   </script>
 </body>

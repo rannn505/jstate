@@ -1,6 +1,6 @@
 jstate.showDevTools();
 const logger = next => action => {
-  let result = next(action);
+  next(action);
   console.log($._);
 }
 jstate.register(logger);
