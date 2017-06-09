@@ -61,7 +61,7 @@
   cursor: pointer;
 }
 .jjson-container .expanded:before {
-  content: "\25BC";
+  content: "\25B8";
   font-size: 1.2em;
   width: 13px;
   text-align: center;
@@ -70,7 +70,7 @@
   color: #268bd2;
   position: absolute;
   left: -15px;
-  top: 3px;
+  top: 2px;
 }
 
 .jjson-container .collapsed:before {

@@ -5,9 +5,12 @@
   <meta content="IE=edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title> jState DevTools </title>
-  <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
-  <link href="https://cdn.rawgit.com/rannn505/jstate/master/src/jsonviewer/jsonviewer.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata" media="screen">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" media="screen">
+  <!-- <link rel="stylesheet" href="./jsonviewer/jsonviewer.min.css" media="screen"> -->
+  <link rel="stylesheet" href="https://cdn.rawgit.com/rannn505/jstate/master/src/jsonviewer/jsonviewer.min.css" media="screen">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/benjamine/jsondiffpatch/master/public/formatters-styles/html.css" media="screen">
+  <link rel="stylesheet" href="https://cdn.rawgit.com/benjamine/jsondiffpatch/master/public/formatters-styles/annotated.css" media="screen">
   <style>
     body {
       position: fixed; top: 0; bottom: 0; left: 0; right: 0;
@@ -114,9 +117,9 @@
     <div class="actions" id="actions">
     </div>
     <div class="btns">
-      <input class="input" placeholder="setState()" style="flex: 10 2" type="text" id="setState">
-      <button class="btn" id="reset">Reset</button>
-      <button class="btn" id="rollback">Rollback</button>
+      <input class="input" placeholder="setState() &#x21B4" style="flex: 10 2" type="text" id="setState">
+      <button class="btn" id="reset">Reset &#x21BA</button>
+      <button class="btn" id="rollback">Rollback &#x21B6</button>
     </div>
     <div class="title">
       jState DevTools
@@ -124,25 +127,55 @@
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.rawgit.com/rannn505/jstate/master/src/jsonviewer/jsonviewer.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsondiffpatch/0.2.4/jsondiffpatch.min.js"></script>
+  <script src="https://cdn.rawgit.com/benjamine/jsondiffpatch/master/public/build/jsondiffpatch.min.js"></script>
+  <script src="https://cdn.rawgit.com/benjamine/jsondiffpatch/master/public/build/jsondiffpatch-formatters.min.js"></script>
   <script>
     (function () {
       if (!window.jQuery) {
         throw new Error('jQuery is not loaded. please check your network connectivity');
       }
       var nodes = [], id = 0;
+      var diffpatcher = jsondiffpatch.create({
+        objectHash: function(obj, index) {
+          if (typeof obj._id !== 'undefined') {
+            return obj._id;
+          }
+          if (typeof obj.id !== 'undefined') {
+            return obj.id;
+          }
+          if (typeof obj.name !== 'undefined') {
+            return obj.name;
+          }
+          return '$$index:' + index;
+        }
+      });
+      jsondiffpatch.formatters.html.hideUnchanged();
       function renderNodes() {
         $('#actions').empty();
         $.each(nodes, function(index, node) {
-          node.diff = jsondiffpatch.diff(node.oldState, node.state);
-          delete node.oldState;
+          // add new action first
           $('#actions').prepend('<div id="'+node.id+'"></div>');
           var newNode = $('#'+node.id);
-          newNode.jsonviewer(node, index === nodes.length - 1);
-          if(index === nodes.length - 1) {
-            newNode.addClass('animated slideInDown')
+          if(index === nodes.length - 1) { newNode.addClass('animated slideInDown'); }
+          // add action as jsonviewer to top
+          newNode.append('<div id="'+node.id+'T"></div>');
+          $('#'+node.id+'T').jsonviewer(node, index === nodes.length - 1);
+          // add diff as jsondiffpatch to bottom
+          newNode.append('<button class="btn" style="width: 100%;"> Toggle diff &#x2195 </button>');
+          newNode.append('<div id="'+node.id+'B" style="margin-top: 5px;"></div>');
+          var down = $('#'+node.id+'B');
+          $('#'+node.id+' .btn').click(function() {
+            down.toggle();
+          });
+          down.hide();
+          var delta = diffpatcher.diff(node.oldState, node.state);
+          if (typeof delta === 'undefined') {
+            down.html('no diff');
           }
-          newNode.append('<hr class="hr"/>');
+          else {
+            down.html(jsondiffpatch.formatters.html.format(delta, node.oldState));
+          }
+          down.append('<hr class="hr"/>');
         });
       }
       $(window).on("message", function(e) {
