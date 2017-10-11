@@ -4,20 +4,57 @@
   <meta charset="utf-8">
   <meta content="IE=edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="shortcut icon" type="image/png" href="."/>
-  <title> JState </title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism-okaidia.min.css">
+  <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/rannn505/jstate/master/assets/jstate.png"/>
+  <title> jState </title>
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.1.1/css/hover-min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" integrity="sha384-OHBBOqpYHNsIqQy8hL1U+8OXf9hH6QRxi0+EODezv82DfnZoV7qoHAZDwMwEJvSw" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
   <style>
+    a {
+      color: #337ab7;
+      text-decoration: none;
+    }
     .container-fixed {
-      bottom: 0;
       position: fixed;
+      bottom: 0;
       left: 0;
       right: 0;
       top: 0;
-      background: #e53935;
-      background: -webkit-linear-gradient(to right, #e53935, #e35d5b);
-      background: linear-gradient(to right, #e53935, #e35d5b);
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      background: #272822;
+      color: #f8f8f2;
+      background-size: cover;
+      -webkit-box-shadow: inset 0 0 100px rgba(0, 0, 0, .5);
+          box-shadow: inset 0 0 100px rgba(0, 0, 0, .5);
+    }
+    .container {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      top: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      /*min-height: 0;
+      display: flex;
+      flex-flow:column nowrap;
+      justify-content: center;
+      align-items: center;*/
+      display: grid;
+      border-width: 8px;
+      border-style: solid;
+      border-image: linear-gradient(to right, #40e0d0, #ff8c00, #ff0080) 1 round;
+      font-family: Consolas, Menlo, Monaco, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, serif;
+    }
+    .mar {
+      margin: auto;
+      text-align: center;
     }
     .highlight {
       background: #272822;
@@ -30,99 +67,80 @@
       max-height: 400px;
       border: 0;
       border-radius: 0;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
+    }
+    .btn-docs {
+      style="font-size: 1.05rem;
+      text-decoration: none;
+      display: inline-block;
+      letter-spacing: .1rem;
+      padding: .75em 2rem;
+      cursor: pointer;
+      border-color: #40e0d0;
+      border: 1px solid #40e0d0;
+      border-radius: 2rem;
+      box-sizing: border-box;
+      color: #40e0d0;
+      animation-duration: 2s;
+      /*animation-delay: 2s;*/
+      animation-iteration-count: infinite;
     }
     ::-webkit-scrollbar-track {
       -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    	background-color: #e53935;
+    	background-color: #272822;
     }
     ::-webkit-scrollbar {
     	width: 5px;
-    	background-color: #000;
+    	background-color: #ff0080;
     }
     ::-webkit-scrollbar-thumb {
-      background-color: #000;
+      background-color: #ff0080;
     }
   </style>
 </head>
 <body>
-  <div class="container-fluid container-fixed" style="overflow-y: auto;">
-    <a href="https://github.com/rannn505/node-powershell"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
-    <div class="row" style="margin: 20px 0 10px 0">
-      <div class="col-md-3" style="text-align: left; color: white; font-family: monospace; font-size: 60px; text-align: center">
-        <img class="hidden-xs hidden-sm" src="./assets/logo2.png" height="128"/>
-        <img class="hidden-md hidden-lg" src="https://raw.githubusercontent.com/rannn505/node-powershell/master/assets/node-powershell3-1-0.png" height="128"/>
-      </div>
-    </div>
-    <div class="row" style="margin: 0 0 20px 0">
-      <div class="col-md-12">
-        <a target="_blank" href="https://travis-ci.org/rannn505/node-powershell"><img src="https://img.shields.io/travis/rannn505/node-powershell.svg?style=flat-square" alt="Build Status"></a>
-        <a target="_blank" href="https://www.npmjs.com/package/node-powershell"><img src="https://img.shields.io/npm/v/node-powershell.svg?style=flat-square" alt="NPM Version"></a>
-        <a target="_blank" href="https://npm-stat.com/charts.html?package=node-powershell"><img src="https://img.shields.io/npm/dt/node-powershell.svg?style=flat-square" alt="NPM Downloads"></a>
-        <a target="_blank" href="https://coveralls.io/github/rannn505/node-powershell"><img src="https://img.shields.io/coveralls/rannn505/node-powershell.svg?style=flat-square" alt="Coveralls"></a>
-        <a target="_blank" href="http://packagequality.com/#?package=node-powershell"><img src="http://npm.packagequality.com/shield/node-powershell.svg?style=flat-square" alt="Package Quality"></a>
-        <a target="_blank" href="https://github.com/rannn505/node-powershell/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed-raw/rannn505/node-powershell.svg?style=flat-square" alt="Closed Issues"></a>
-        <a target="_blank" href="https://david-dm.org/rannn505/node-powershell"><img src="https://img.shields.io/david/rannn505/node-powershell.svg?style=flat-square" alt="Dependencies"></a>
-        <a target="_blank" href="https://github.com/rannn505/node-powershell/blob/master/LICENSE"><img src="https://img.shields.io/github/license/rannn505/node-powershell.svg?style=flat-square" alt="License"></a>
-        <a target="_blank" href="https://github.com/rannn505/node-powershell/stargazers"><img src="https://img.shields.io/github/stars/rannn505/node-powershell.svg?style=social&label=Star" alt=" GitHub Stars"></a>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-9">
-        <div class="highlight" style="border-radius: 0; padding: 1em;">
-          <span class="language-javascript">
-            Node-PowerShell taking advantage of two of the simplest, effective and easy tools that exist in the today technology world.
-            On the one hand, <a target="_blank" href="https://nodejs.org/en/">NodeJS</a> which made a revolution in the world of javascript,
-            and on the other hand, <a target="_blank" href="https://github.com/PowerShell/PowerShell">PowerShell</a> which recently came out with an initial open-source, cross-platform version,
-            and by connecting them together, gives you the power to create any solution you were asked to, no matter if you are a programmer, an IT or a DevOps guy.
-          </span>
+  <div class="container-fixed">
+    <div class="container">
+      <div class="mar animated zoomIn">
+        <!-- logo -->
+        <div style="font-family: 'Pacifico', cursive; font-size: 60px;">
+          jState
         </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-4">
-        <pre class="highlight" style="border-radius: 0; font-size: 12px">
-<code class="language-javascript">const shell = require('node-powershell');
-
-let ps = new shell({
-  executionPolicy: 'Bypass',
-  noProfile: true
-});
-
-ps.addCommand('echo node-powershell')
-ps.invoke()
-.then(output => {
-  console.log(output);
-})
-.catch(err => {
-  console.log(err);
-  ps.dispose();
-});</code></pre>
-      <div class="highlight" style="border-radius: 0; padding: 1em; text-align: center;">
-          <a target="_blank" href="http://cdn.rawgit.com/rannn505/node-powershell/236b6c3a/docs/docs.html">
-            <img width="64" src="http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/Docs-icon.png" alt="API reference">
-            <span style="font-size: 30px; vertical-align: middle;">Documentation</span>
-          </a>
+        <div style="padding: 10px 0 0 0; margin: auto; max-width: 600px;">
+          <a target="_blank" href="https://travis-ci.org/rannn505/jstate"><img src="https://img.shields.io/travis/rannn505/jstate.svg?style=flat-square" alt="Build Status"></a>
+          <a target="_blank" href="https://www.npmjs.com/package/jstate"><img src="https://img.shields.io/npm/v/jstate.svg?style=flat-square" alt="NPM Version"></a>
+          <a target="_blank" href="https://npm-stat.com/charts.html?package=jstate"><img src="https://img.shields.io/npm/dt/jstate.svg?style=flat-square" alt="NPM Downloads"></a>
+          <a target="_blank" href="https://coveralls.io/github/rannn505/jstate"><img src="https://img.shields.io/coveralls/rannn505/jstate.svg?style=flat-square" alt="Coveralls"></a>
+          <a target="_blank" href="http://packagequality.com/#?package=jstate"><img src="http://npm.packagequality.com/shield/jstate.svg?style=flat-square" alt="Package Quality"></a>
+          <a target="_blank" href="https://github.com/rannn505/jstate/issues?q=is%3Aissue+is%3Aclosed"><img src="https://img.shields.io/github/issues-closed-raw/rannn505/jstate.svg?style=flat-square" alt="Closed Issues"></a>
+          <a target="_blank" href="https://david-dm.org/rannn505/jstate"><img src="https://img.shields.io/david/rannn505/jstate.svg?style=flat-square" alt="Dependencies"></a>
+          <a target="_blank" href="https://github.com/rannn505/jstate/blob/master/LICENSE"><img src="https://img.shields.io/github/license/rannn505/jstate.svg?style=flat-square" alt="License"></a>
+          <a target="_blank" href="https://github.com/rannn505/jstate/stargazers"><img src="https://img.shields.io/github/stars/rannn505/jstate.svg?style=social&label=Star" alt=" GitHub Stars"></a>
         </div>
+        <div class="highlight" style="padding: 10px 0 0 0; margin: auto; max-width: 1000px;">
+          > <strong>jState is a very friendly <a target="_blank" href="https://facebook.github.io/flux/docs/overview.html">Flux</a> implementation.</strong>
+          Nowadays there are many <a target="_blank" href="https://github.com/voronianski/flux-comparison">libraries</a>
+          that do this implementation and do it with a great success, each characterized by certain characteristics,
+          emphasis certain parameters and has a strong link to other libraries.
+          jState primarily emphasizes complexity, this means that it has a very short and focused API,
+          it is super easy to integrate with all the newest FE libraries and it takes almost no time to get started with.
+        </div>
+        <div style="margin: 10px 0 0 0">
+          <a target="_blank" href="http://cdn.rawgit.com/rannn505/node-powershell/236b6c3a/docs/docs.html" class="btn-docs animated pulse">
+          <i class="fa fa-book" aria-hidden="true"></i> Get Started
+        </a>
       </div>
-      <div class="col-md-4 hidden-xs hidden-sm" style="margin: .5em 0">
-        <img src="https://raw.githubusercontent.com/rannn505/node-powershell/master/assets/run.gif" width="100%"/>
-      </div>
-      <div class="col-md-4" style="text-align: center;">
-        <img src="https://raw.githubusercontent.com/rannn505/node-powershell/master/assets/box.png" width="100%"/>
-      </div>
-    </div>
-    <div class="row" style="margin: 20px -15px 0 -15px">
-      <div class="col-md-12" >
-        <div class="highlight" style="border-radius: 0; text-align: center; padding: 1em;">
-          <span>© 2017 by <a href="mailto:rannn505@outlook.com">Ran Cohen - rannn505</a>.</span>
-          <img src="https://s.gravatar.com/avatar/9dead8d77f6134c58065ee39f499d3fd?size=100&amp;default=retro" style="width: 25px; height: 25px" alt="rannn505">
+        <div class="animated flip" style="margin: 20px 0 0 0; animation-delay: 1s;">
+          <img src="assets/jstate.png" height="216"/>
+        </div>
+        <div style="margin: 10px 0 0 0">
+          <span>© 2017 by <a href="mailto:rannn505@outlook.com">Ran Cohen - rannn505</a>. <img src="https://s.gravatar.com/avatar/9dead8d77f6134c58065ee39f499d3fd?size=100&amp;default=retro" style="width: 25px; height: 25px" alt="rannn505"></span>
         </div>
       </div>
     </div>
   </div>
+  <!-- ribbon -->
+  <a href="https://github.com/rannn505/jstate"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-javascript.min.js"></script>
 </body>
 </html>

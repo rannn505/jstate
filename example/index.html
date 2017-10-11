@@ -1,16 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>jState</title>
   <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/png" href="assets/jstate.png"/>
+  <link rel="icon" href="assets/jstate.png" />
+  <title> jState </title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
+  <style>
+    body {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+      color: white;
+      text-align: center;
+      font-family: 'Roboto', sans-serif;
+      height: 100%
+    }
+  </style>
 </head>
 <body>
-
-<h1>jState Demo</h1>
-<p>Open console (Press F12)</p>
+<div>
+  <h1>jState</h1>
+  <img src="assets/jstate.png" height="216"/>
+  <p>
+    Open console (Press F12)<br/>
+    Watch and play with the DevTools
+  </p>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="./jstate.js"></script>
-<script src="./demo.js"></script>
+<script src="dist/jstate.dev.js"></script>
+<script src="demo.js"></script>
 </body>
 </html>

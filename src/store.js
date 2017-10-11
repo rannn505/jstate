@@ -4,7 +4,7 @@ let _middlewares = [];
 export default {
   get state() {
     // return Object.assign({}, _state);
-    return JSON.parse(JSON.stringify( _state ));
+    return JSON.parse(JSON.stringify(_state));
   },
   setState: (partialState) => {
     if(typeof partialState !== 'object') {
@@ -17,14 +17,14 @@ export default {
   },
   register: (...middlewares) => {
     _middlewares = _middlewares.concat(middlewares);
-    let chain = _middlewares.reduceRight((f, g) => next => f(g(next)))(partialState => _state = {..._state, ...partialState});
+    let chain = _middlewares.reduceRight((prev, cur) => next => prev(cur(next)))(partialState => _state = {..._state, ...partialState});
     module.exports.setState = chain;
     global['$'].setState = chain;
-    module.exports.overwriteState = _middlewares.reduceRight((f, g) => {
-      if(g.name === '__DEVTOOLS__') {
-        return f;
+    module.exports.overwriteState = _middlewares.reduceRight((prev, cur) => {
+      if(cur.name === '__DEVTOOLS__') {
+        return prev;
       }
-      return next => f(g(next));
+      return next => prev(cur(next));
     })(newState => _state = {...newState});
   },
 };
