@@ -8,15 +8,18 @@ export default {
   },
   setState: (partialState) => {
     if(typeof partialState !== 'object') {
-      throw new TypeError('setState() takes an object of state variables to update');
+      throw new TypeError('setState() takes an object as parameter');
     }
     _state = {..._state, ...partialState};
   },
   overwriteState: (newState) => {
     _state = {...newState};
   },
-  register: (...middlewares) => {
-    _middlewares = _middlewares.concat(middlewares);
+  register: (middleware) => {
+    if(typeof middleware !== 'function') {
+      throw new TypeError('register() takes a function as parameter');
+    }
+    _middlewares.push(middleware);
     let chain = _middlewares.reduceRight((prev, cur) => next => prev(cur(next)))(partialState => _state = {..._state, ...partialState});
     module.exports.setState = chain;
     global['$'].setState = chain;

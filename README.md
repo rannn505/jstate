@@ -37,7 +37,7 @@ $.setState({a:2, b:3});
 
 
 ## API Reference
-**:memo: [API reference](https://cdn.rawgit.com/rannn505/jstate/master/docs/docs.html)**<br/>
+**:memo: [API reference](http://cdn.rawgit.com/rannn505/jstate/master/docs/docs.html)**<br/>
 I've created a convenient and readable page, so you can enjoy the experience of learning and begin to use the library quickly and easily.
 
 

@@ -1,5 +1,5 @@
 /*********************************************************
- * jstate - Really friendly Flux implementation
+ * jstate - Very friendly Flux implementation
  * @version v1.0.0
  * @link https://github.com/rannn505/jstate#readme
  * @copyright Copyright (c) 2017 Ran Cohen <rannn505@outlook.com>
@@ -68,19 +68,18 @@ exports.default = {
   },
   setState: function setState(partialState) {
     if ((typeof partialState === 'undefined' ? 'undefined' : _typeof(partialState)) !== 'object') {
-      throw new TypeError('setState() takes an object of state variables to update');
+      throw new TypeError('setState() takes an object as parameter');
     }
     _state = _extends({}, _state, partialState);
   },
   overwriteState: function overwriteState(newState) {
     _state = _extends({}, newState);
   },
-  register: function register() {
-    for (var _len = arguments.length, middlewares = Array(_len), _key = 0; _key < _len; _key++) {
-      middlewares[_key] = arguments[_key];
+  register: function register(middleware) {
+    if (typeof middleware !== 'function') {
+      throw new TypeError('register() takes a function as parameter');
     }
-
-    _middlewares = _middlewares.concat(middlewares);
+    _middlewares.push(middleware);
     var chain = _middlewares.reduceRight(function (prev, cur) {
       return function (next) {
         return prev(cur(next));

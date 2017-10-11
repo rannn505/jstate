@@ -123,4 +123,6 @@ gulp.task('dev', () => {
 // });
 // yarn install --production=false
 
+gulp.task('build', ['buildProd']);
+
 gulp.task('default', ['build']);

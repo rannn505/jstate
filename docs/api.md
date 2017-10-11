@@ -45,4 +45,4 @@ Launches the jstate's development tools. <br/>
 jstate.showDevTools();
 $.showDevTools();
 ```
-![DevTools](https://raw.githubusercontent.com/rannn505/jstate/master/assets/devTools.png "DevTools")
+![DevTools](https://raw.githubusercontent.com/rannn505/jstate/master/assets/devTools.gif "DevTools")
