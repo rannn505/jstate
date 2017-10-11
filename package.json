@@ -1,6 +1,6 @@
 {
   "name": "jstate",
-  "version": "0.9.9",
+  "version": "1.0.0",
   "description": "Very friendly Flux implementation",
   "main": "./dist/jstate.js",
   "files": [
